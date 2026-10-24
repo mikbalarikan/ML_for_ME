@@ -1,3 +1,10 @@
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+
+# video/ (Remotion) - derlenmis ciktilar ve onbellekler; final mp4 haric
+video/node_modules/
+video/out/*
+!video/out/ml_for_me_egitim.mp4
+video/.remotion/
+video/build/
