@@ -233,6 +233,110 @@ def fig_scaling(train):
     plt.close(fig)
 
 
+def fig_windowing(train, seq_len=50):
+    """Aşama 4: kayan pencere fikri ve tek bir pencerenin 'resmi'."""
+    from matplotlib.patches import Rectangle
+
+    sensors = [f"s{i}" for i in range(1, 22)]
+    feats = ["cycle"] + [c for c in sensors if train[c].std() >= 0.002]
+    df = train.copy()
+    df["label"] = ((df.groupby("id")["cycle"].transform("max") - df["cycle"]) <= 30).astype(int)
+    scaled = (df[feats] - df[feats].min()) / (df[feats].max() - df[feats].min())
+    e1 = scaled[df.id == 1].reset_index(drop=True)
+    lab = df.loc[df.id == 1, "label"].to_numpy()
+
+    fig = plt.figure(figsize=(16, 9))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.15], width_ratios=[1.5, 1], hspace=0.4, wspace=0.15)
+    ax = fig.add_subplot(gs[0, :])
+    cyc = np.arange(1, len(e1) + 1)
+    ax.plot(cyc, e1["s4"], color=GRAY, lw=1.2)
+    windows = [(1, BLUE, "Pencere 1: çevrim 1–50"), (2, AQUA, "Pencere 2: çevrim 2–51"),
+               (len(e1) - seq_len + 1, ORANGE, "Pencere 143: çevrim 143–192")]
+    for k, (start, c, name) in enumerate(windows):
+        end = start + seq_len - 1
+        y0 = -0.08 - k * 0.09
+        ax.add_patch(Rectangle((start - 0.5, y0), seq_len, 0.05, color=c, alpha=0.85, lw=0))
+        ax.plot(end, e1["s4"][end - 1], "o", color=c, ms=9, mec=SURF, mew=2)
+        ax.text(start + seq_len + 2 if k < 2 else start - 2, y0 + 0.025,
+                f"{name}  →  cevap: label[{end}] = {lab[end - 1]}", va="center", fontsize=10.5,
+                ha="left" if k < 2 else "right", color=INK)
+    ax.set_ylim(-0.36, 1.0)
+    ax.set_xlim(0, 196)
+    ax.set_xlabel("Motor 1 · çevrim")
+    ax.set_ylabel("s4 (ölçekli)")
+    ax.set_title("Pencere birer çevrim kayarak ilerliyor; her pencerenin cevabı SON çevriminin etiketi "
+                 "(192 − 50 + 1 = 143 pencere)", loc="left", fontsize=12)
+
+    ax2 = fig.add_subplot(gs[1, 0])
+    win = e1.iloc[-seq_len:].to_numpy().T
+    im = ax2.imshow(win, aspect="auto", cmap="Blues", vmin=0, vmax=1)
+    ax2.set_yticks(range(len(feats)))
+    ax2.set_yticklabels(["cycle_norm" if f == "cycle" else f for f in feats], fontsize=9)
+    ax2.set_xticks([0, 24, 49])
+    ax2.set_xticklabels(["143", "167", "192"])
+    ax2.set_xlabel("çevrim")
+    ax2.grid(False)
+    ax2.set_title("Pencere 143'ün 'resmi': 15 özellik × 50 çevrim\n(koyu = 1'e yakın)", loc="left", fontsize=12)
+    fig.colorbar(im, ax=ax2, fraction=0.03, pad=0.01)
+
+    ax3 = fig.add_subplot(gs[1, 1])
+    ax3.axis("off")
+    ax3.set_title("Modele giden veri bloğu: bir küp", loc="left", fontsize=12)
+    for i in range(6):
+        ax3.add_patch(FancyBboxPatch((0.12 + i * 0.05, 0.22 + i * 0.06), 0.42, 0.42,
+                                     boxstyle="round,pad=0.0,rounding_size=0.02",
+                                     fc="white", ec=BLUE, lw=1.5))
+    ax3.text(0.33 + 5 * 0.05, 0.43 + 5 * 0.06, "1 pencere\n50 × 15", ha="center", va="center", fontsize=11)
+    ax3.text(0.5, 0.06, "X_train.shape = (15731, 50, 15)\n(pencere sayısı, çevrim, özellik)",
+             ha="center", fontsize=12, weight="bold", color=INK)
+    ax3.text(0.5, -0.04, "100 motor × (ömür − 49) = 20.631 − 100·49 = 15.731 kart", ha="center", fontsize=10.5, color=INK2,
+             va="top")
+    ax3.set_xlim(0, 1)
+    ax3.set_ylim(0, 1)
+    fig.suptitle("Aşama 4 · Pencereleme: tek fotoğraf yerine 50 karelik film", x=0.01, ha="left",
+                 fontsize=14, weight="bold")
+    fig.savefig(IMG / "07_pencereleme.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
+def fig_model():
+    """Aşama 5: LSTM modelinin katmanları ve veri şekilleri."""
+    layers = [
+        ("Girdi", "50 çevrim ×\n15 özellik", "(50, 15)", GRAY, "0"),
+        ("LSTM 100", "her çevrimi okur,\nhafızasını günceller,\nçevrim başına\n100 sayılık özet", "(50, 100)", ORANGE, "46.400"),
+        ("Dropout 0.2", "eğitimde nöronların\n%20'si rastgele\nkapalı (ezber önler)", "(50, 100)", GRAY, "0"),
+        ("LSTM 50", "50 çevrimin tamamını\n50 sayılık tek bir\nözete sıkıştırır", "(50,)", ORANGE, "30.200"),
+        ("Dropout 0.2", "", "(50,)", GRAY, "0"),
+        ("Dense 1 · sigmoid", "50 sayıyı tek sayıya\nindirir: 0…1 =\narıza olasılığı", "(1,)", AQUA, "51"),
+    ]
+    fig, ax = plt.subplots(figsize=(15, 5.6))
+    ax.axis("off")
+    ax.set_xlim(0, 6)
+    ax.set_ylim(0, 1.15)
+    for i, (name, desc, shape, c, params) in enumerate(layers):
+        x = i + 0.08
+        h = 0.62 if "LSTM" in name else (0.42 if "Dense" in name else 0.5)
+        y = 0.55 - h / 2
+        ax.add_patch(FancyBboxPatch((x, y), 0.84, h, boxstyle="round,pad=0.01,rounding_size=0.04",
+                                    fc=c, ec=c, alpha=0.95 if c != GRAY else 0.45))
+        ax.text(x + 0.42, 0.55, name, ha="center", va="center", fontsize=13, weight="bold",
+                color="white" if c != GRAY else INK)
+        ax.text(x + 0.42, y - 0.06, f"çıktı {shape}", ha="center", va="top", fontsize=10.5, color=INK)
+        ax.text(x + 0.42, y - 0.13, f"{params} parametre", ha="center", va="top", fontsize=9.5, color=INK2)
+        if desc:
+            ax.text(x + 0.42, y + h + 0.04, desc, ha="center", va="bottom", fontsize=9.5, color=INK2,
+                    linespacing=1.4)
+        if i < len(layers) - 1:
+            ax.annotate("", xy=(i + 1.08, 0.55), xytext=(i + 0.93, 0.55),
+                        arrowprops=dict(arrowstyle="-|>", color=INK2, lw=1.5))
+    ax.text(0.08, 0.02, "Toplam 76.651 öğrenilebilir parametre (ağırlık). Eğitim = bu sayıları hatayı azaltacak şekilde "
+            "ayarlamak.", fontsize=11, color=INK)
+    ax.set_title("Aşama 5 · Model: iki katlı LSTM + tek nöronlu karar katmanı", loc="left", fontsize=14,
+                 weight="bold")
+    fig.savefig(IMG / "08_model.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     train = load("PM_train.txt")
     fig_map()
@@ -241,4 +345,6 @@ if __name__ == "__main__":
     fig_flat_sensors(train)
     fig_labeling(train)
     fig_scaling(train)
+    fig_windowing(train)
+    fig_model()
     print("Görseller:", sorted(p.name for p in IMG.glob("*.png")))

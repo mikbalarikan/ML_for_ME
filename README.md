@@ -16,9 +16,9 @@ Bu, makine mühendisliğindeki en yaygın ML kullanımlarından biri: **kestirim
 | 1 | Veriyi tanı | ✅ | [docs/ders_01_veriyi_tani.md](docs/ders_01_veriyi_tani.md) |
 | 2 | Etiketle (RUL ve label) | ✅ | [docs/ders_02_etiketle.md](docs/ders_02_etiketle.md) |
 | 3 | Ölçekle (MinMax) | ✅ | [docs/ders_03_olcekle.md](docs/ders_03_olcekle.md) |
-| 4 | Pencerele (50 çevrimlik diziler) | ⏳ sırada | |
-| 5 | Modeli kur (LSTM) | ⬜ | |
-| 6 | Eğit (canlı takip) | ⬜ | |
+| 4 | Pencerele (50 çevrimlik diziler) | ✅ | [docs/ders_04_pencerele.md](docs/ders_04_pencerele.md) |
+| 5 | Modeli kur (LSTM) | ✅ | [docs/ders_05_model.md](docs/ders_05_model.md) |
+| 6 | Eğit (canlı takip) | 🔄 eğitim sürüyor | |
 | 7 | Test et (precision, recall) | ⬜ | |
 | 8 | Raporla ve sonraki adımlar | ⬜ | |
 
