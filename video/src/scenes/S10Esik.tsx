@@ -96,7 +96,7 @@ export const S10Esik: React.FC = () => {
           </div>
         </Card>
       </div>
-      <div style={{position: 'absolute', left: 96, top: 1010, opacity: note, fontSize: 22, color: C.faint, fontWeight: 500}}>
+      <div style={{position: 'absolute', left: 96, top: 1010, opacity: prog(frame, 20, 20), fontSize: 22, color: C.faint, fontWeight: 500}}>
         Not: gösterim amaçlı test verisi; gerçek eşik doğrulama verisinde seçilir.
       </div>
     </Shell>

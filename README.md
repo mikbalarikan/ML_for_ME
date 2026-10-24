@@ -9,6 +9,8 @@ Bu, makine mühendisliğindeki en yaygın ML kullanımlarından biri: **kestirim
 
 ![Büyük harita](docs/img/01_harita.png)
 
+🎬 **Eğitim videosu (86 sn):** [video/out/ml_for_me_egitim.mp4](video/out/ml_for_me_egitim.mp4), Remotion ile gerçek veriden üretildi. Yeniden render: `cd video && npm install && npm run render`
+
 ## İlerleme
 
 | Aşama | Konu | Durum | Ders notu |
@@ -37,6 +39,7 @@ ML_for_ME/
 │   ├── make_figures.py    ← ders görsellerini üretir (eğitimin parçası değil)
 │   └── inside_the_model.py← modeli numpy ile elle hesaplar, tek eğitim adımını gösterir
 ├── docs/                  ← her aşamanın ders notu + görseller
+├── video/                 ← Remotion projesi (11 sahnelik özet video)
 └── outputs/               ← eğitilmiş model, eğitim eğrileri, loglar
     ├── binary_model.keras     en iyi model (epoch 44)
     ├── training_log.csv       epoch epoch loss / accuracy / recall
