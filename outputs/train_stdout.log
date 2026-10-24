@@ -1,0 +1,80 @@
+Atılan sabit sensörler: ['s1', 's5', 's6', 's10', 's16', 's18', 's19']
+Özellikler (15): ['cycle_norm', 's2', 's3', 's4', 's7', 's8', 's9', 's11', 's12', 's13', 's14', 's15', 's17', 's20', 's21']
+X_train: (15731, 50, 15) | y_train: (15731,) | tehlike oranı: 0.197
+X_test : (93, 50, 15) | y_test : (93,) | tehlikedeki test motoru: 25
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792870353.697414     263 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1792870378.585972     263 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Model: "sequential"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ lstm (LSTM)                     │ (None, 50, 100)        │        46,400 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout (Dropout)               │ (None, 50, 100)        │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ lstm_1 (LSTM)                   │ (None, 50)             │        30,200 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_1 (Dropout)             │ (None, 50)             │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense (Dense)                   │ (None, 1)              │            51 │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+ Total params: 76,651 (299.42 KB)
+ Trainable params: 76,651 (299.42 KB)
+ Non-trainable params: 0 (0.00 B)
+epoch   1 | loss 0.2456 | val_loss 0.0869 | acc 0.895 | val_acc 0.963 | val_recall 0.916
+epoch   2 | loss 0.0903 | val_loss 0.0745 | acc 0.964 | val_acc 0.968 | val_recall 0.903
+epoch   3 | loss 0.0784 | val_loss 0.0587 | acc 0.968 | val_acc 0.973 | val_recall 0.916
+epoch   4 | loss 0.0698 | val_loss 0.0615 | acc 0.970 | val_acc 0.971 | val_recall 0.884
+epoch   5 | loss 0.0649 | val_loss 0.0622 | acc 0.973 | val_acc 0.967 | val_recall 0.865
+epoch   6 | loss 0.0632 | val_loss 0.0782 | acc 0.972 | val_acc 0.962 | val_recall 0.819
+epoch   7 | loss 0.0608 | val_loss 0.0585 | acc 0.974 | val_acc 0.972 | val_recall 0.877
+epoch   8 | loss 0.0604 | val_loss 0.0704 | acc 0.974 | val_acc 0.962 | val_recall 0.845
+epoch   9 | loss 0.0603 | val_loss 0.0652 | acc 0.975 | val_acc 0.970 | val_recall 0.871
+epoch  10 | loss 0.0561 | val_loss 0.0518 | acc 0.978 | val_acc 0.976 | val_recall 0.903
+epoch  11 | loss 0.0542 | val_loss 0.0617 | acc 0.977 | val_acc 0.972 | val_recall 0.877
+epoch  12 | loss 0.0523 | val_loss 0.0601 | acc 0.978 | val_acc 0.973 | val_recall 0.890
+epoch  13 | loss 0.0545 | val_loss 0.0557 | acc 0.977 | val_acc 0.973 | val_recall 0.910
+epoch  14 | loss 0.0530 | val_loss 0.0593 | acc 0.978 | val_acc 0.972 | val_recall 0.877
+epoch  15 | loss 0.0498 | val_loss 0.0622 | acc 0.980 | val_acc 0.972 | val_recall 0.877
+epoch  16 | loss 0.0489 | val_loss 0.0626 | acc 0.980 | val_acc 0.972 | val_recall 0.877
+epoch  17 | loss 0.0497 | val_loss 0.0521 | acc 0.980 | val_acc 0.975 | val_recall 0.903
+epoch  18 | loss 0.0517 | val_loss 0.0485 | acc 0.979 | val_acc 0.977 | val_recall 0.923
+epoch  19 | loss 0.0484 | val_loss 0.0673 | acc 0.981 | val_acc 0.972 | val_recall 0.877
+epoch  20 | loss 0.0490 | val_loss 0.0508 | acc 0.980 | val_acc 0.976 | val_recall 0.903
+epoch  21 | loss 0.0479 | val_loss 0.0516 | acc 0.980 | val_acc 0.975 | val_recall 0.903
+epoch  22 | loss 0.0435 | val_loss 0.0666 | acc 0.982 | val_acc 0.973 | val_recall 0.877
+epoch  23 | loss 0.0454 | val_loss 0.0619 | acc 0.981 | val_acc 0.973 | val_recall 0.903
+epoch  24 | loss 0.0441 | val_loss 0.0496 | acc 0.983 | val_acc 0.977 | val_recall 0.923
+epoch  25 | loss 0.0454 | val_loss 0.0538 | acc 0.981 | val_acc 0.978 | val_recall 0.955
+epoch  26 | loss 0.0440 | val_loss 0.0478 | acc 0.983 | val_acc 0.976 | val_recall 0.923
+epoch  27 | loss 0.0406 | val_loss 0.0513 | acc 0.983 | val_acc 0.975 | val_recall 0.916
+epoch  28 | loss 0.0402 | val_loss 0.0453 | acc 0.984 | val_acc 0.978 | val_recall 0.916
+epoch  29 | loss 0.0407 | val_loss 0.0468 | acc 0.983 | val_acc 0.978 | val_recall 0.929
+epoch  30 | loss 0.0461 | val_loss 0.0493 | acc 0.981 | val_acc 0.980 | val_recall 0.929
+epoch  31 | loss 0.0406 | val_loss 0.0524 | acc 0.983 | val_acc 0.978 | val_recall 0.923
+epoch  32 | loss 0.0413 | val_loss 0.0446 | acc 0.983 | val_acc 0.981 | val_recall 0.929
+epoch  33 | loss 0.0397 | val_loss 0.0520 | acc 0.983 | val_acc 0.980 | val_recall 0.948
+epoch  34 | loss 0.0392 | val_loss 0.0522 | acc 0.983 | val_acc 0.976 | val_recall 0.923
+epoch  35 | loss 0.0390 | val_loss 0.0487 | acc 0.984 | val_acc 0.977 | val_recall 0.923
+epoch  36 | loss 0.0369 | val_loss 0.0461 | acc 0.983 | val_acc 0.981 | val_recall 0.961
+epoch  37 | loss 0.0359 | val_loss 0.0404 | acc 0.984 | val_acc 0.985 | val_recall 0.961
+epoch  38 | loss 0.0356 | val_loss 0.0399 | acc 0.985 | val_acc 0.982 | val_recall 0.948
+epoch  39 | loss 0.0368 | val_loss 0.0514 | acc 0.984 | val_acc 0.978 | val_recall 0.929
+epoch  40 | loss 0.0347 | val_loss 0.0401 | acc 0.985 | val_acc 0.985 | val_recall 0.961
+epoch  41 | loss 0.0339 | val_loss 0.0432 | acc 0.985 | val_acc 0.982 | val_recall 0.961
+epoch  42 | loss 0.0325 | val_loss 0.0426 | acc 0.986 | val_acc 0.985 | val_recall 0.968
+epoch  43 | loss 0.0325 | val_loss 0.0518 | acc 0.986 | val_acc 0.982 | val_recall 0.935
+epoch  44 | loss 0.0332 | val_loss 0.0362 | acc 0.987 | val_acc 0.985 | val_recall 0.968
+epoch  45 | loss 0.0335 | val_loss 0.0549 | acc 0.986 | val_acc 0.976 | val_recall 0.897
+epoch  46 | loss 0.0314 | val_loss 0.0522 | acc 0.986 | val_acc 0.978 | val_recall 0.916
+epoch  47 | loss 0.0343 | val_loss 0.0790 | acc 0.986 | val_acc 0.975 | val_recall 0.929
+epoch  48 | loss 0.0324 | val_loss 0.0591 | acc 0.986 | val_acc 0.977 | val_recall 0.916
+epoch  49 | loss 0.0302 | val_loss 0.0565 | acc 0.987 | val_acc 0.978 | val_recall 0.923
+epoch  50 | loss 0.0287 | val_loss 0.0388 | acc 0.988 | val_acc 0.982 | val_recall 0.942
+epoch  51 | loss 0.0287 | val_loss 0.0518 | acc 0.988 | val_acc 0.980 | val_recall 0.935
+epoch  52 | loss 0.0301 | val_loss 0.0441 | acc 0.987 | val_acc 0.982 | val_recall 0.935
+epoch  53 | loss 0.0325 | val_loss 0.0641 | acc 0.987 | val_acc 0.976 | val_recall 0.910
+epoch  54 | loss 0.0291 | val_loss 0.0864 | acc 0.988 | val_acc 0.973 | val_recall 0.903
+En iyi model kaydedildi: /home/user/ML_for_ME/outputs/binary_model.keras

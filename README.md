@@ -18,8 +18,8 @@ Bu, makine mühendisliğindeki en yaygın ML kullanımlarından biri: **kestirim
 | 3 | Ölçekle (MinMax) | ✅ | [docs/ders_03_olcekle.md](docs/ders_03_olcekle.md) |
 | 4 | Pencerele (50 çevrimlik diziler) | ✅ | [docs/ders_04_pencerele.md](docs/ders_04_pencerele.md) |
 | 5 | Modeli kur (LSTM) | ✅ | [docs/ders_05_model.md](docs/ders_05_model.md) |
-| 6 | Eğit (canlı takip) | 🔄 eğitim sürüyor | |
-| 7 | Test et (precision, recall) | ⬜ | |
+| 6 | Eğit (canlı takip) | ✅ | [docs/ders_06_egit.md](docs/ders_06_egit.md) |
+| 7 | Test et (precision, recall) | ⏳ sırada | |
 | 8 | Raporla ve sonraki adımlar | ⬜ | |
 
 ## Klasörler
@@ -35,7 +35,10 @@ ML_for_ME/
 ├── tools/
 │   └── make_figures.py    ← ders görsellerini üretir (eğitimin parçası değil)
 ├── docs/                  ← her aşamanın ders notu + görseller
-└── outputs/               ← eğitilmiş model, grafikler, loglar (Aşama 6'dan sonra)
+└── outputs/               ← eğitilmiş model, eğitim eğrileri, loglar
+    ├── binary_model.keras     en iyi model (epoch 44)
+    ├── training_log.csv       epoch epoch loss / accuracy / recall
+    └── training_progress.png  canlı eğitim grafiği
 ```
 
 ## Kurulum ve çalıştırma
