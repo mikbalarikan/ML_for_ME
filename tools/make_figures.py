@@ -337,6 +337,39 @@ def fig_model():
     plt.close(fig)
 
 
+def fig_training_loop():
+    """Aşama 6 teknik: bir eğitim adımının 4 parçası (döngü)."""
+    boxes = [
+        (0.03, 0.55, "1 · İleri yayılım (forward)", "200 pencere (200, 50, 15)\n→ LSTM → LSTM → Dense\n→ 200 olasılık p", BLUE),
+        (0.52, 0.55, "2 · Kayıp (loss)", "BCE = −[ y·log p + (1−y)·log(1−p) ]\n200 örneğin ortalaması\n→ tek bir sayı L", ORANGE),
+        (0.52, 0.06, "3 · Geri yayılım (backprop)", "zincir kuralı ile ∂L/∂w\n76.651 ağırlığın her biri için\n(50 çevrim geriye: BPTT)", ORANGE),
+        (0.03, 0.06, "4 · Adam güncellemesi", "w ← w − η · m̂ / (√v̂ + ε)\nη = 0.001 (öğrenme hızı)\nm̂, v̂: gradyanın hareketli ort.", AQUA),
+    ]
+    fig, ax = plt.subplots(figsize=(13, 6.6))
+    ax.axis("off")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    w, h = 0.45, 0.36
+    for x, y, title, body, c in boxes:
+        ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.01,rounding_size=0.02", fc="white", ec=c, lw=2))
+        ax.add_patch(FancyBboxPatch((x, y + h - 0.09), w, 0.09, boxstyle="round,pad=0.01,rounding_size=0.02",
+                                    fc=c, ec=c, lw=2))
+        ax.text(x + w / 2, y + h - 0.045, title, ha="center", va="center", color="white", fontsize=13, weight="bold")
+        ax.text(x + w / 2, y + (h - 0.09) / 2, body, ha="center", va="center", color=INK, fontsize=11.5,
+                linespacing=1.6)
+    arrow = dict(arrowstyle="-|>", color=INK2, lw=1.8)
+    ax.annotate("", xy=(0.515, 0.73), xytext=(0.485, 0.73), arrowprops=arrow)
+    ax.annotate("", xy=(0.745, 0.43), xytext=(0.745, 0.54), arrowprops=arrow)
+    ax.annotate("", xy=(0.485, 0.24), xytext=(0.515, 0.24), arrowprops=arrow)
+    ax.annotate("", xy=(0.255, 0.54), xytext=(0.255, 0.43), arrowprops=arrow)
+    ax.text(0.5, 0.485, "1 tur = 1 adım  ·  1 epoch ≈ 75 adım  ·  bizim eğitim ≈ 4.050 adım", ha="center",
+            va="center", fontsize=11, color=INK2)
+    ax.set_title("Aşama 6 · Bir eğitim adımı: tahmin et → hatayı ölç → suçluyu bul → düzelt", loc="left",
+                 fontsize=14, weight="bold")
+    fig.savefig(IMG / "10_egitim_dongusu.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     train = load("PM_train.txt")
     fig_map()
@@ -347,4 +380,5 @@ if __name__ == "__main__":
     fig_scaling(train)
     fig_windowing(train)
     fig_model()
+    fig_training_loop()
     print("Görseller:", sorted(p.name for p in IMG.glob("*.png")))
