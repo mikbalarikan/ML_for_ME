@@ -153,10 +153,58 @@ def fig_flat_sensors(train):
     plt.close(fig)
 
 
+def fig_labeling(train, w1=30):
+    """Aşama 2: Motor 1 üzerinde RUL ve etiketin nasıl üretildiği + sınıf dengesi."""
+    df = train.copy()
+    df["rul"] = df.groupby("id")["cycle"].transform("max") - df["cycle"]
+    df["label"] = (df["rul"] <= w1).astype(int)
+    e1 = df[df.id == 1]
+    cut = e1.loc[e1.label == 1, "cycle"].min()
+
+    fig = plt.figure(figsize=(15, 8.5))
+    gs = fig.add_gridspec(3, 3, height_ratios=[1.2, 1.2, 0.6], hspace=0.45, wspace=0.3)
+    ax1 = fig.add_subplot(gs[0, :2])
+    ax2 = fig.add_subplot(gs[1, :2], sharex=ax1)
+    ax3 = fig.add_subplot(gs[2, :2], sharex=ax1)
+    ax4 = fig.add_subplot(gs[:, 2])
+
+    ax1.plot(e1.cycle, e1.s4, color=BLUE, lw=1.6)
+    ax1.set_title("Motor 1 · s4 (T50 türbin çıkış sıcaklığı) — ham veri", loc="left", fontsize=12)
+    ax2.plot(e1.cycle, e1.rul, color=INK2, lw=2)
+    ax2.axhline(w1, color=ORANGE, lw=1.2, ls="--")
+    ax2.text(3, w1 + 6, "RUL = 30 eşiği", color=ORANGE, fontsize=10)
+    ax2.annotate("150. çevrim → RUL = 42", xy=(150, 42), xytext=(100, 150), fontsize=10, color=INK,
+                 arrowprops=dict(arrowstyle="-|>", color=INK2))
+    ax2.set_title("Ürettiğimiz sütun: RUL = 192 − cycle  (kalan ömür)", loc="left", fontsize=12)
+    ax3.fill_between(e1.cycle, e1.label, step="mid", color=ORANGE, alpha=0.9, lw=0)
+    ax3.set_yticks([0, 1])
+    ax3.set_ylim(-0.1, 1.3)
+    ax3.set_title(f"Ürettiğimiz etiket: label = 1 eğer RUL ≤ 30  (çevrim {cut}–192)", loc="left", fontsize=12)
+    ax3.set_xlabel("Çevrim (uçuş)")
+    for ax in (ax1, ax2):
+        ax.axvspan(cut - 0.5, 192.5, color=ORANGE, alpha=0.12, lw=0)
+        plt.setp(ax.get_xticklabels(), visible=False)
+
+    counts = df["label"].value_counts().sort_index()
+    bars = ax4.bar(["0  (güvenli)", "1  (tehlike)"], counts.values, color=[BLUE, ORANGE], width=0.6)
+    for b, v in zip(bars, counts.values):
+        ax4.text(b.get_x() + b.get_width() / 2, v + 250, f"{v:,}".replace(",", ".") + f"\n%{v / counts.sum() * 100:.0f}",
+                 ha="center", fontsize=11)
+    ax4.set_ylim(0, counts.max() * 1.15)
+    ax4.grid(axis="x", visible=False)
+    ax4.set_title("Tüm eğitim verisi:\nsınıf dengesi", loc="left", fontsize=12)
+    ax4.set_ylabel("Satır sayısı")
+    fig.suptitle("Aşama 2 · Etiketleme: ham sensör verisine \"doğru cevap\" sütunu yapıştırıyoruz",
+                 x=0.01, ha="left", fontsize=14, weight="bold")
+    fig.savefig(IMG / "05_etiketleme.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     train = load("PM_train.txt")
     fig_map()
     fig_lifetimes(train)
     fig_sensor_trends(train)
     fig_flat_sensors(train)
+    fig_labeling(train)
     print("Görseller:", sorted(p.name for p in IMG.glob("*.png")))

@@ -37,6 +37,27 @@ test_df = read_engine_file("PM_test.txt")
 truth_df = pd.read_csv(DATA / "PM_truth.txt", sep=" ", header=None).iloc[:, :1]
 truth_df.columns = ["more"]
 
+##################################
+# AŞAMA 2 · Etiketle
+##################################
+
+W1 = 30  # uyarı penceresi: "önümüzdeki 30 çevrim içinde arızalanacak mı?"
+
+# TRAIN: her motorun son çevrimi = arıza anı.
+# transform("max") her satırın yanına KENDİ motorunun son çevrimini yazar.
+train_df["RUL"] = train_df.groupby("id")["cycle"].transform("max") - train_df["cycle"]
+
+# TEST: son kayıt arıza anı değil. Toplam ömür = son kayıtlı çevrim + truth'taki "more".
+truth_df["id"] = truth_df.index + 1  # truth'un 1. satırı motor 1'e ait
+test_df = test_df.merge(truth_df, on="id")
+test_df["RUL"] = test_df.groupby("id")["cycle"].transform("max") + test_df["more"] - test_df["cycle"]
+test_df = test_df.drop(columns="more")
+
+# Etiket: RUL <= 30 ise 1 (tehlike), değilse 0 (güvenli)
+train_df["label"] = (train_df["RUL"] <= W1).astype(int)
+test_df["label"] = (test_df["RUL"] <= W1).astype(int)
+
 if __name__ == "__main__":
     print("train:", train_df.shape, "| test:", test_df.shape, "| truth:", truth_df.shape)
-    print(train_df.head())
+    print(train_df[["id", "cycle", "s4", "RUL", "label"]].iloc[[0, 1, 150, 160, 161, 191]])
+    print("Etiket dağılımı (train):", train_df["label"].value_counts().to_dict())
