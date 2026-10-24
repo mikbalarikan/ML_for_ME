@@ -200,6 +200,39 @@ def fig_labeling(train, w1=30):
     plt.close(fig)
 
 
+def fig_scaling(train):
+    """Aşama 3: ham değerler vs MinMax vs standardizasyon (Motor 1, üç sensör)."""
+    sensors = [("s9", "s9 çekirdek devri", BLUE), ("s4", "s4 T50 sıcaklık", ORANGE), ("s11", "s11 Ps30 basınç", AQUA)]
+    e1 = train[train.id == 1]
+    fig, axes = plt.subplots(1, 3, figsize=(16, 4.8))
+    titles = ["1) Ham değerler: s9 her şeyi eziyor",
+              "2) MinMax: (x − min) / (max − min) → 0…1",
+              "3) Standardizasyon: (x − ort) / std → ~ −3…+3"]
+    for ax, title, mode in zip(axes, titles, ["raw", "minmax", "z"]):
+        for s, name, c in sensors:
+            col = train[s]
+            if mode == "raw":
+                y = e1[s]
+            elif mode == "minmax":
+                y = (e1[s] - col.min()) / (col.max() - col.min())
+            else:
+                y = (e1[s] - col.mean()) / col.std()
+            ax.plot(e1.cycle, y, color=c, lw=1.4, label=name)
+        ax.set_title(title, loc="left", fontsize=12)
+        ax.set_xlabel("Motor 1 · çevrim")
+    axes[0].set_ylim(0, 10000)
+    axes[0].text(5, 8300, "s9 ≈ 9000", color=INK, fontsize=10)
+    axes[0].text(5, 1700, "s4 ≈ 1400", color=INK, fontsize=10)
+    axes[0].text(5, 400, "s11 ≈ 47 (dibe yapışık)", color=INK, fontsize=10)
+    axes[1].axhline(0, color=INK2, lw=0.8); axes[1].axhline(1, color=INK2, lw=0.8)
+    axes[0].legend(loc="center right", frameon=False, fontsize=10)
+    fig.suptitle("Aşama 3 · Ölçekleme: farklı birimdeki sensörleri aynı cetvele koymak",
+                 x=0.01, ha="left", fontsize=14, weight="bold")
+    fig.tight_layout()
+    fig.savefig(IMG / "06_olcekleme.png", dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     train = load("PM_train.txt")
     fig_map()
@@ -207,4 +240,5 @@ if __name__ == "__main__":
     fig_sensor_trends(train)
     fig_flat_sensors(train)
     fig_labeling(train)
+    fig_scaling(train)
     print("Görseller:", sorted(p.name for p in IMG.glob("*.png")))

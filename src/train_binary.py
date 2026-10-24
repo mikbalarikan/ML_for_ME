@@ -8,6 +8,7 @@ Referans proje: https://github.com/umbertogriffo/Predictive-Maintenance-using-LS
 from pathlib import Path
 
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -57,7 +58,30 @@ test_df = test_df.drop(columns="more")
 train_df["label"] = (train_df["RUL"] <= W1).astype(int)
 test_df["label"] = (test_df["RUL"] <= W1).astype(int)
 
+##################################
+# AŞAMA 3 · Ölçekle
+##################################
+
+# Hiç değişmeyen sensörleri (sadece EĞİTİM verisine bakarak) ayıklıyoruz: bilgi taşımıyorlar,
+# MinMax'te de payda (max - min) = 0 olur. setting1-2 bu veri setinde tek çalışma koşulunun
+# etrafındaki gürültü (RUL ile korelasyonu ~0.003), onları da almıyoruz.
+SENSORS = [f"s{i}" for i in range(1, 22)]
+CONSTANT_SENSORS = [s for s in SENSORS if train_df[s].std() < 0.002]
+
+# cycle'ın kendisi de bilgi: motor ne kadar yaşlı? Ölçeklenmiş kopyasını özellik yapıyoruz,
+# orijinal cycle sütunu sıralama için olduğu gibi kalıyor.
+train_df["cycle_norm"] = train_df["cycle"]
+test_df["cycle_norm"] = test_df["cycle"]
+FEATURES = ["cycle_norm"] + [s for s in SENSORS if s not in CONSTANT_SENSORS]
+
+# fit = min ve max'ı ÖĞREN (sadece eğitim verisinden), transform = formülü UYGULA
+scaler = MinMaxScaler()
+train_df[FEATURES] = scaler.fit_transform(train_df[FEATURES])
+test_df[FEATURES] = scaler.transform(test_df[FEATURES])
+
 if __name__ == "__main__":
     print("train:", train_df.shape, "| test:", test_df.shape, "| truth:", truth_df.shape)
-    print(train_df[["id", "cycle", "s4", "RUL", "label"]].iloc[[0, 1, 150, 160, 161, 191]])
-    print("Etiket dağılımı (train):", train_df["label"].value_counts().to_dict())
+    print("Atılan sabit sensörler:", CONSTANT_SENSORS)
+    print(f"Özellikler ({len(FEATURES)}):", FEATURES)
+    print(train_df[["id", "cycle", "s4", "s9", "s11", "RUL", "label"]].iloc[[0, 161, 191]])
+    print("Test aralığı:", test_df[FEATURES].min().min().round(3), "...", test_df[FEATURES].max().max().round(3))
